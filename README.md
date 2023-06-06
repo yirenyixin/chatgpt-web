@@ -1,53 +1,12 @@
-# 关于我
-科技互联网领域自媒体博主，所有视频首发于**Youtube：**[【科技小飞哥】](https://www.youtube.com/@techxiaofei)，欢迎关注。加入**粉丝群：**[【科技小飞哥的粉丝群】](https://t.me/+m0d7_ft5Utw2MzY1)
-![wechat_mp_foot.png](./docs/wechat_mp_foot.png)
 
+>来源与Youtube博主：**Youtube：**[【科技小飞哥】](https://www.youtube.com/@techxiaofei)，欢迎关注。
+>博主github源码：https://github.com/techxiaofei/chatgpt-web
+>我只是介绍用aws亚马逊云服务和修改头像，名字等方法
 # ChatGPT Web
 
 > 声明：此项目只发布于 Github，基于 MIT 协议，免费且作为开源学习使用。并且不会有任何形式的卖号、付费服务、讨论群、讨论组等行为。谨防受骗。
 
 
-## 介绍
-
-支持双模型，提供了两种非官方 `ChatGPT API` 方法
-
-| 方式                                          | 免费？ | 可靠性     | 质量 |
-| --------------------------------------------- | ------ | ---------- | ---- |
-| `ChatGPTAPI(gpt-3.5-turbo-0301)`                           | 否     | 可靠       | 相对较笨 |
-| `ChatGPTUnofficialProxyAPI(网页 accessToken)` | 是     | 相对不可靠 | 聪明 |
-
-对比：
-1. `ChatGPTAPI` 使用 `gpt-3.5-turbo` 通过 `OpenAI` 官方 `API` 调用 `ChatGPT`
-2. `ChatGPTUnofficialProxyAPI` 使用非官方代理服务器访问 `ChatGPT` 的后端`API`，绕过`Cloudflare`（依赖于第三方服务器，并且有速率限制）
-
-警告：
-1. 你应该首先使用 `API` 方式
-2. 使用 `API` 时，如果网络不通，那是国内被墙了，你需要自建代理，绝对不要使用别人的公开代理，那是危险的。
-3. 使用 `accessToken` 方式时反向代理将向第三方暴露您的访问令牌，这样做应该不会产生任何不良影响，但在使用这种方法之前请考虑风险。
-4. 使用 `accessToken` 时，不管你是国内还是国外的机器，都会使用代理。默认代理为 [acheong08](https://github.com/acheong08) 大佬的 `https://bypass.churchless.tech/api/conversation`，这不是后门也不是监听，除非你有能力自己翻过 `CF` 验证，用前请知悉。[社区代理](https://github.com/transitive-bullshit/chatgpt-api#reverse-proxy)（注意：只有这两个是推荐，其他第三方来源，请自行甄别）
-5. 把项目发布到公共网络时，你应该设置 `AUTH_SECRET_KEY` 变量添加你的密码访问权限，你也应该修改 `index.html` 中的 `title`，防止被关键词搜索到。
-
-切换方式：
-1. 进入 `service/.env.example` 文件，复制内容到 `service/.env` 文件
-2. 使用 `OpenAI API Key` 请填写 `OPENAI_API_KEY` 字段 [(获取 apiKey)](https://platform.openai.com/overview)
-3. 使用 `Web API` 请填写 `OPENAI_ACCESS_TOKEN` 字段 [(获取 accessToken)](https://chat.openai.com/api/auth/session)
-4. 同时存在时以 `OpenAI API Key` 优先
-
-环境变量：
-
-全部参数变量请查看或[这里](#环境变量)
-
-```
-/service/.env.example
-```
-
-
-
-### 前端网页
-根目录下运行以下命令
-```shell
-pnpm dev
-```
 
 ### 启动新实例
 ![aws.png](./docs/aws.png)
@@ -151,7 +110,9 @@ docker build -t chatgpt-web .
 
 ```
 
-#接下来要上传douker
+#接下来要上传docker（注册docker需要魔法上网  https://hub.docker.com/）
+我的用户名
+![hub-docker](./docs/hub-docker.png)
 ```shell
 [root@localhost ~]#  docker login
 Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
@@ -172,8 +133,52 @@ docker push  注册docker用户名/REPOSITORY:TAG
 比如我的就是
 docker push yirwnyixin/chatgpt-web:latest
 
-```
+再次查看镜像
+docker images 
+会变成这样
+REPOSITORY                  TAG
+yirwnyixin/chatgpt-web      latest
 
+push到Docker Hub
+docker push yirwnyixin/chatgpt-web:latest
+```
+#就可以看到镜像
+![hub-docker-1](./docs/hub-docker-1.png)
+
+
+#接下来回到服务器
+```shell
+先修改root用户密码
+sudo passwd root
+
+切换到root用户
+su  root
+
+# 更新包管理器
+sudo apt-get update
+
+# 安装docker
+apt install docker.io
+
+# 下载docker镜像
+docker pull yirwnyixin/chatgpt-web:latest（仓库名:TAG 对应yirwnyixin/chatgpt-web（你的仓库名）：latest）
+
+# 给镜像打标签
+docker tag yirwnyixin/chatgpt-web chatgpt-web
+
+# 后台运行，可修改主机端口 比如：80->8080，3002是容器端口，不可修改（到这里就可以结束）
+docker run --name chatgpt-web -d -p 0.0.0.0:80:3002 --env OPENAI_API_KEY=你的openai-key chatgpt-web
+
+# 后台运行，带密码访问
+# 添加环境变量方式： --env KEY=XXX
+docker run --name chatgpt-web -d -p 0.0.0.0:80:3002 --env OPENAI_API_KEY=你的openai-key --env AUTH_SECRET_KEY=techxiaofei chatgpt-web
+
+# 停掉进程（如需重启）
+docker stop chatgpt-web
+docker
+```
+接下来就可以复制你的服务器公有ip（不用带端口）去网页查看了
+有域名的还可以用cloudfrale将你的IP托管到域名上，就可以直接输入域名，不用输ip了
 
 
 
