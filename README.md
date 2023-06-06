@@ -151,7 +151,7 @@ docker build -t chatgpt-web .
 
 ```
 
-#接下来要上传docker
+#接下来要上传docker（注册docker需要魔法上网  https://hub.docker.com/）
 我的用户名
 ![hub-docker](./docs/hub-docker.png)
 ```shell
@@ -183,7 +183,43 @@ yirwnyixin/chatgpt-web      latest
 push到Docker Hub
 docker push yirwnyixin/chatgpt-web:latest
 ```
+#就可以看到镜像
+![hub-docker-1](./docs/hub-docker-1.png)
 
+
+#接下来回到服务器
+```shell
+先修改root用户密码
+sudo passwd root
+
+切换到root用户
+su  root
+
+# 更新包管理器
+sudo apt-get update
+
+# 安装docker
+apt install docker.io
+
+# 下载docker镜像
+docker pull yirwnyixin/chatgpt-web:latest（仓库名:TAG 对应yirwnyixin/chatgpt-web（你的仓库名）：latest）
+
+# 给镜像打标签
+docker tag yirwnyixin/chatgpt-web chatgpt-web
+
+# 后台运行，可修改主机端口 比如：80->8080，3002是容器端口，不可修改（到这里就可以结束）
+docker run --name chatgpt-web -d -p 0.0.0.0:80:3002 --env OPENAI_API_KEY=你的openai-key chatgpt-web
+
+# 后台运行，带密码访问
+# 添加环境变量方式： --env KEY=XXX
+docker run --name chatgpt-web -d -p 0.0.0.0:80:3002 --env OPENAI_API_KEY=你的openai-key --env AUTH_SECRET_KEY=techxiaofei chatgpt-web
+
+# 停掉进程（如需重启）
+docker stop chatgpt-web
+docker
+```
+接下来就可以复制你的服务器公有ip（不用带端口）去网页查看了
+有域名的还可以用cloudfrale将你的IP托管到域名上，就可以直接输入域名，不用输ip了
 
 
 
