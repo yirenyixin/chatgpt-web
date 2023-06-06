@@ -151,7 +151,9 @@ docker build -t chatgpt-web .
 
 ```
 
-#接下来要上传douker
+#接下来要上传docker
+我的用户名
+![hub-docker](./docs/hub-docker.png)
 ```shell
 [root@localhost ~]#  docker login
 Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
@@ -172,6 +174,14 @@ docker push  注册docker用户名/REPOSITORY:TAG
 比如我的就是
 docker push yirwnyixin/chatgpt-web:latest
 
+再次查看镜像
+docker images 
+会变成这样
+REPOSITORY                  TAG
+yirwnyixin/chatgpt-web      latest
+
+push到Docker Hub
+docker push yirwnyixin/chatgpt-web:latest
 ```
 
 
